@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <title>Flexbox Layout</title>
+</head>
+
+<body>
+  <header class="navbar">
+    <h1>My Website</h1>
+    <button class="hello-btn" id="helloBtn" onclick="sayHello()">Hello</button>
+    <nav>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="container">
+    <aside class="sidebar">
+      <h2>Sidebar</h2>
+      <ul>
+        <li><a href="#">Element 1</a></li>
+        <li><a href="#">Element 2</a></li>
+        <li><a href="#">Element 3</a></li>
+        <li><a href="#">Element 4</a></li>
+      </ul>
+    </aside>
+
+    <div class="div-stack-item" style="background: pink">
+      <h1>Pink header</h1>
+      <div class="div-stack-item" style="background: cyan">
+        <div style="display: flex;">
+          <ul style="background: purple; color: white; padding: .4rem;">
+            <li>apples</li>
+            <li>oranges</li>
+            <li>bitches</li>
+          </ul>
+          <div>
+            <button onclick="sayHello()">Hello</button>
+            <h4>This is h4 tag</h4>
+            <img class="scan-img" height="70" width="70" src="dog.png" alt="">
+          </div>
+        </div>
+        <div class="div-stack-item" style="background: gray">
+          <div class="div-stack-item" style="background: orange">
+            <div class="div-stack-item" style="background: yellow; margin: 0">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="div-stack-item" style="background: pink">
+      <div class="div-stack-item" style="background: cyan">
+        <div class="div-stack-item" style="background: gray">
+          <div class="div-stack-item" style="background: orange">
+            <div class="div-stack-item" style="background: yellow">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="div-stack-item" style="background: pink">
+      <div class="div-stack-item" style="background: cyan">
+        <div class="div-stack-item" style="background: gray">
+          <div class="div-stack-item" style="background: orange">
+            <div class="div-stack-item" style="background: yellow">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main class="content">
+      <h1>Main Content</h1>
+      <p>This is the main content area. It can contain various elements.</p>
+      <img src="/images/dog.png" alt="">
+    </main>
+  </div>
+
+  <footer class="footer">
+    <p>&copy; 2023 My Website. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function sayHello() {console.log('hello')}
+    function sayGoodbye(){console.log('Goodbye Saygon')}
+
+    helloBtn.addEventListener('click', sayGoodbye)
+  </script>
+</body>
+
+</html>

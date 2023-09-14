@@ -1,0 +1,14 @@
+.scan{
+  transition: all 100ms ease-in; 
+  cursor: pointer;
+}
+.scan:hover {
+  outline: solid 2px red;
+}  
+.scan-hover {
+  transform: translate(1rem, -1rem) /*rotate(4deg)*/;
+  outline: solid 2px red;
+}
+.scan-pause{
+  transform: translate(0.001rem, 0.001rem) !important;
+}
