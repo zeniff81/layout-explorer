@@ -1,14 +1,21 @@
-function sayHello(){
-  console.log('hello')
+function sayHello(){console.log('hello')}
+sayHello()
+
+// content.js
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if(message === 'start') init()
+});
+
+async function  init(){
+  const response = await fetch(chrome.extension.getURL('layout-explorer.html'));
+  if (!response.ok) {
+    throw new Error(`Failed to fetch: ${response.statusText}`);
+  }
+
+  const html = await response.text()
+  console.log(html)
 }
 
-chrome.runtime.onMessage.addListener(
-  function (message, sender, sendResponse) {
-    executeAction(message.action)
-    console.log(sender)
-    sendResponse('content.js: received...')
-  }
-);
 
 const LayoutExplorerSingleton = (function () {
   let instance;
@@ -116,4 +123,3 @@ layoutExplorer.addAction({ name: 'stopScanning', func: stopScanning })
 
 /*********************  test  */
 
-chrome.runtime.sendMessage('MARCO')
