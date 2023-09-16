@@ -6,16 +6,78 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if(message === 'start') init()
 });
 
-async function  init(){
-  const response = await fetch(chrome.extension.getURL('layout-explorer.html'));
-  if (!response.ok) {
-    throw new Error(`Failed to fetch: ${response.statusText}`);
-  }
 
-  const html = await response.text()
-  console.log(html)
+const LAYOUT_HTML = `
+  <button class="btn btn-start">Start</button>
+  <button class="btn btn-stop">Stop</button>
+  <div class="direction">
+    <input value="top-left" name="direction" type="radio">
+    <input value="top-center" name="direction" type="radio">
+    <input value="top-right" name="direction" type="radio">
+    <input value="center-left" name="direction" type="radio">
+    <input value="center-center" name="direction" type="radio">
+    <input value="center-right" name="direction" type="radio">
+    <input value="bottom-left" name="direction" type="radio">
+    <input value="bottom-center" name="direction" type="radio">
+    <input value="bottom-right" name="direction" type="radio">
+  </div>
+  <div class="position">
+    <input value="top-left" name="position" type="radio">
+    <input value="top-right" name="position" type="radio">
+    <input value="bottom-left" name="position" type="radio">
+    <input value="bottom-right" name="position" type="radio">
+  </div>
+
+  <style>
+    .layout-explorer-container {
+      display: flex;
+      gap: 1rem;
+      background: pink;
+      padding: 1rem;
+      width: 270px;
+      justify-content: center;
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+    }
+
+    .direction,
+    .position {
+      display: flex;
+      flex-wrap: wrap;
+      width: 4rem;
+    }
+
+    .direction input {
+      flex: 0 0 calc(33.333% - 10px);
+    }
+
+    .position input {
+      flex: 0 0 calc(40% - 10px);
+    }
+  </style>
+`
+function generateHtml(){
+  const alreadyExists = document.querySelector('.layout-explorer-container')
+  if(alreadyExists) return 
+  const div = document.createElement('div')
+  div.classList.add('layout-explorer-container')
+  div.innerHTML = LAYOUT_HTML
+  document.body.appendChild(div)
 }
 
+function assignEvents(){
+  const btnStart = document.querySelector('.layout-explorer-container .btn-start')
+  const btnStop = document.querySelector('.layout-explorer-container .btn-stop')
+
+  btnStart.addEventListener('click', startScanning)
+  btnStop.addEventListener('click', stopScanning)
+}
+
+function  init(){
+  generateHtml()
+  assignEvents()
+}
 
 const LayoutExplorerSingleton = (function () {
   let instance;
@@ -82,7 +144,7 @@ function backupOnclick(element){
 }
 
 // methods
-const startScanning = (parent = document.body) => {
+function startScanning(parent = document.body){
   const elements = document.querySelectorAll('body *')
   elements.forEach(el => {
     el.classList.add('scan')
@@ -108,7 +170,7 @@ const startScanning = (parent = document.body) => {
     })
   })
 }
-const stopScanning = (parent = document.body) => {
+function stopScanning(parent = document.body){
   const elements = document.querySelectorAll('.scan')  
   elements.forEach(el => {
     el.classList.remove('scan')
