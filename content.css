@@ -6,9 +6,18 @@
   outline: solid 2px red;
 }  
 .scan-hover {
-  transform: translate(1rem, -1rem) /*rotate(4deg)*/;
   outline: solid 2px red;
 }
+.scan-hover-left-top      {transform: translate(-1rem, -1rem)}
+.scan-hover-center-top    {transform: translate( 0rem, -1rem)}
+.scan-hover-right-top     {transform: translate( 1rem, -1rem)}
+.scan-hover-left-center   {transform: translate(-1rem,  0rem)}
+.scan-hover-center-center {transform: translate( 0rem,  0rem)}
+.scan-hover-right-center  {transform: translate( 1rem,  0rem)}
+.scan-hover-left-bottom   {transform: translate(-1rem,  1rem)}
+.scan-hover-center-bottom {transform: translate( 0rem,  1rem)}
+.scan-hover-right-bottom  {transform: translate( 1rem,  1rem)}
+
 .scan-pause{
   transform: translate(0.001rem, 0.001rem) !important;
 }

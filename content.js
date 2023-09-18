@@ -1,81 +1,50 @@
-function sayHello(){console.log('hello')}
-sayHello()
+function sayHello() { console.log('hello') }
 
 // content.js
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if(message === 'start') init()
+  if (message === 'start') init()
 });
 
+async function generateHtml() {
+  const askHtml = await fetch(chrome.runtime.getURL('layout-explorer.html'))
+  const askCss = await fetch(chrome.runtime.getURL('layout-explorer.css'))
 
-const LAYOUT_HTML = `
-  <button class="btn btn-start">Start</button>
-  <button class="btn btn-stop">Stop</button>
-  <div class="direction">
-    <input value="top-left" name="direction" type="radio">
-    <input value="top-center" name="direction" type="radio">
-    <input value="top-right" name="direction" type="radio">
-    <input value="center-left" name="direction" type="radio">
-    <input value="center-center" name="direction" type="radio">
-    <input value="center-right" name="direction" type="radio">
-    <input value="bottom-left" name="direction" type="radio">
-    <input value="bottom-center" name="direction" type="radio">
-    <input value="bottom-right" name="direction" type="radio">
-  </div>
-  <div class="position">
-    <input value="top-left" name="position" type="radio">
-    <input value="top-right" name="position" type="radio">
-    <input value="bottom-left" name="position" type="radio">
-    <input value="bottom-right" name="position" type="radio">
-  </div>
+  const css = await askCss.text()
+  const html = await askHtml.text()
 
-  <style>
-    .layout-explorer-container {
-      display: flex;
-      gap: 1rem;
-      background: pink;
-      padding: 1rem;
-      width: 270px;
-      justify-content: center;
-      position: fixed;
-      bottom: 1rem;
-      right: 1rem;
-    }
-
-    .direction,
-    .position {
-      display: flex;
-      flex-wrap: wrap;
-      width: 4rem;
-    }
-
-    .direction input {
-      flex: 0 0 calc(33.333% - 10px);
-    }
-
-    .position input {
-      flex: 0 0 calc(40% - 10px);
-    }
-  </style>
-`
-function generateHtml(){
-  const alreadyExists = document.querySelector('.layout-explorer-container')
-  if(alreadyExists) return 
   const div = document.createElement('div')
-  div.classList.add('layout-explorer-container')
-  div.innerHTML = LAYOUT_HTML
+  div.innerHTML = html
+  div.innerHTML += `<style>${css}</style>`
+
+  div.querySelectorAll('*').forEach(element => element.classList.add('no-scan'))
+
+
   document.body.appendChild(div)
 }
 
-function assignEvents(){
+function assignEvents() {
   const btnStart = document.querySelector('.layout-explorer-container .btn-start')
   const btnStop = document.querySelector('.layout-explorer-container .btn-stop')
+  const btnScan = document.querySelector('.layout-explorer-container .btn-scan')
+  const btnChild = document.querySelector('.layout-explorer-container .btn-child')
+  const btnParent = document.querySelector('.layout-explorer-container .btn-parents')
+  const allInputDirection = document.querySelectorAll('.input-direction')
+
 
   btnStart.addEventListener('click', startScanning)
   btnStop.addEventListener('click', stopScanning)
+
+  btnScan.addEventListener('click', changeMode)
+  btnChild.addEventListener('click', changeMode)
+  btnParent.addEventListener('click', changeMode)
+
+  allInputDirection.forEach(input => {
+    input.addEventListener('change', changeDirection)
+  })
 }
 
-function  init(){
-  generateHtml()
+async function init() {
+  await generateHtml()
   assignEvents()
 }
 
@@ -93,10 +62,21 @@ const LayoutExplorerSingleton = (function () {
     arrActions.push(payload)
   }
 
+  function getDirection() {
+    return instance.direction
+  }
+  function getMode() {
+    return instance.mode
+  }
+
   const createInstance = () => {
     return {
       clicksEnabled: true,
       scanningEnabled: false,
+      mode: 'scan',
+      getMode,
+      direction: '1rem, -1rem',
+      getDirection,
       getAction,
       addAction
     }
@@ -133,49 +113,127 @@ function toggleClass(element, classToAdd) {
   }
 }
 
-function backupOnclick(element){
+function backupOnclick(element) {
   const backup = []
   // const listeners = window.getEventListeners(helloBtn)
   // listeners.forEach(l => backup.push)
 
-  console.log(window.window.getEventListeners)
+}
 
 
+function updateDirectionForCurrentElements(){
+  const mode = layoutExplorer.getMode()
+  const direction = layoutExplorer.getDirection()
+
+  if(mode ==='scan'){
+    const elements = document.querySelectorAll('.scan-hover')
+    
+    elements.forEach(element=> {
+      const currentDirectionClass = element.dataset.directionClass
+      element.classList.remove(currentDirectionClass)
+      element.classList.add(direction)
+      element.dataset.directionClass = direction
+    })
+  }
+
+
+  
 }
 
 // methods
-function startScanning(parent = document.body){
-  const elements = document.querySelectorAll('body *')
-  elements.forEach(el => {
-    el.classList.add('scan')
+function startScanning(e, parent = document.body) {
+  const elements = document.querySelectorAll('body *:not(.no-scan)')
+  let activateMode
+
+  const mode = layoutExplorer.getMode()
+  if (mode === 'scan') activateMode = activateScanMode
+  if (mode === 'child') activateMode = activateChildMode
+  if (mode === 'parents') activateMode = activateParentsMode
+
+  elements.forEach(element => {
+    element.classList.add('scan')
 
     // backup onclick
-    backupOnclick(el)
+    backupOnclick(element)
 
-    // click
-    el.addEventListener('contextmenu', e => {
-      e.preventDefault()
-      e.stopPropagation()
-      toggleClass(el, 'scan-hover')
-    })
+    activateMode(element)
+
+
+    // // click
+    // element.addEventListener('contextmenu', e => {
+    //   e.preventDefault()
+    //   e.stopPropagation()
+    //   element.style.transform = `translate(${layoutExplorer.getDirection()})`
+    // })
 
     // hover
-    el.addEventListener('mousemove', e => {
-      e.stopPropagation()
-      if (e.shiftKey) {
-        el.classList.add('scan-hover')
-      }else if(e.altKey){
-        el.classList.remove('scan-hover')
-      }
-    })
+    // element.addEventListener('mousemove', e => {
+    //   e.stopPropagation()
+    //   if (e.shiftKey) {
+    //     element.style.transform = `translate(${layoutExplorer.getDirection()})`
+    //   } else if (e.altKey) {
+    //     element.style.transform = ``
+    //   }
+    // })
   })
+
+  e.target.setAttribute('disabled', true)
+  document.querySelector('.btn-stop').removeAttribute('disabled')
 }
-function stopScanning(parent = document.body){
-  const elements = document.querySelectorAll('.scan')  
+function stopScanning(e, parent = document.body) {
+  const elements = document.querySelectorAll('.scan')
   elements.forEach(el => {
     el.classList.remove('scan')
     el.classList.remove('scan-hover')
   })
+  e.target.setAttribute('disabled', true)
+  document.querySelector('.btn-start').removeAttribute('disabled')
+}
+function changeMode(e) {
+  const mode = e.target.dataset.mode
+  layoutExplorer.mode = mode
+
+  // update UI
+  const allBtnMode = document.querySelectorAll('.btn-mode')
+  allBtnMode.forEach(btn => {
+    btn.classList.remove('btn-mode-selected')
+    e.target.classList.add('btn-mode-selected')
+  })
+}
+
+function changeDirection(e) {
+  const direction = e.target.dataset.direction
+  layoutExplorer.direction = direction
+
+  updateDirectionForCurrentElements()
+}
+function activateScanMode(element) {
+  removeCurrentMode()
+  
+  element.addEventListener('mousemove', e => {
+    e.stopPropagation()
+    const direction = layoutExplorer.getDirection() 
+    
+    if (e.shiftKey) {
+      element.classList.add('scan-hover', direction)
+      element.dataset.directionClass = direction
+    } else if (e.altKey) {
+      element.classList.remove('scan-hover', direction)
+      element.dataset.directionClass = ''
+    }
+  })
+
+}
+function activateChildMode(element) {
+  removeCurrentMode()
+
+}
+function activateParentsMode(element) {
+  removeCurrentMode()
+
+}
+function removeCurrentMode() {
+
 }
 
 // register actions

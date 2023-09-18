@@ -12,6 +12,12 @@
         "html": ["layout-explorer.html"]
     }
 ],
+"web_accessible_resources": [
+  {
+    "resources": ["layout-explorer.html", "layout-explorer.css"],
+    "matches": ["<all_urls>"]
+  }
+],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

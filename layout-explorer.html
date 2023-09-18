@@ -1,18 +1,26 @@
-<h3>Layout Explorer</h3>
-  <button id="startScanning">Start Scanning</button>
-  <button id="stopScanning">Stop Scanning</button>
-  <button id="render-btn">Render</button>
-  <div class="direction">
-    <h5>Direction<h5>
-    <label for="top-left"><input name="direction" type="radio"></label>
-    <label for="top-center"><input name="direction" type="radio"></label>
-    <label for="top-right"><input name="direction" type="radio"></label>
-    
-    <label for="middle-left"><input name="direction" type="radio"></label>
-    <label for="middle-center"><input name="direction" type="radio"></label>
-    <label for="middle-right"><input name="direction" type="radio"></label>
-    
-    <label for="bottom-left"><input name="direction" type="radio"></label>
-    <label for="bottom-center"><input name="direction" type="radio"></label>
-    <label for="bottom-right"><input name="direction" type="radio"></label>
+<div class="no-scan layout-explorer-container">
+  <button class="no-scan btn btn-start">Start</button>
+  <button class="no-scan btn btn-stop" disabled>Stop</button>
+  <div class="mode">
+    <button class="btn btn-mode btn-scan btn-mode-selected" data-mode="scan">shift Scan</button>
+    <button class="btn btn-mode btn-child" data-mode="child">click Child</button>
+    <button class="btn btn-mode btn-parents" data-mode="parents">click Parents</button>
   </div>
+  <div class="no-scan direction">
+    <input class="input-direction" data-direction="scan-hover-left-top" name="direction" type="radio">
+    <input class="input-direction" data-direction="scan-hover-center-top" name="direction" type="radio">
+    <input class="input-direction" data-direction="scan-hover-right-top" name="direction" type="radio" checked>
+    <input class="input-direction" data-direction="scan-hover-left-center" name="direction" type="radio">
+    <input class="input-direction" data-direction="scan-hover-center-center" name="direction" type="radio">
+    <input class="input-direction" data-direction="scan-hover-right-center" name="direction" type="radio">
+    <input class="input-direction" data-direction="scan-hover-left-bottom" name="direction" type="radio">
+    <input class="input-direction" data-direction="scan-hover-center-bottom" name="direction" type="radio">
+    <input class="input-direction" data-direction="scan-hover-right-bottom" name="direction" type="radio">
+  </div>  
+  <div class="no-scan position">
+    <input class="no-scan" value="top-left" name="position" type="radio">
+    <input class="no-scan" value="top-right" name="position" type="radio">
+    <input class="no-scan" value="bottom-left" name="position" type="radio">
+    <input class="no-scan" value="bottom-right" name="position" type="radio" checked>
+  </div>  
+</div>
